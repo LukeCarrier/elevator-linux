@@ -8,6 +8,6 @@ In effect, all Elevator does is launch another application. Alone, it may not el
 Warning
 -------
 
-As with all tools of its type, Elevator is susceptible to abuse if it's not configured correctly. Ensure that the user who designate as able to use the application (the 'allowed user') isn't accessible to non-authorised people, or they'll be able to run whatever commands they please with root privileges. That's bad ;-)
+As with all tools of its type, Elevator is susceptible to abuse if it's not configured correctly. Ensure that the user who is designated as able to use the application (the 'allowed user') isn't accessible to non-authorised people, or they'll be able to run whatever commands they please with root privileges. That's bad ;-)
 
 Although I attempt to ensure that the code within is as stable as possible, I'm only human and I do make mistakes. I cannot, and will not, accept responsiblity for any damage this utility might cause on your machine, though I'm always happy to help.
