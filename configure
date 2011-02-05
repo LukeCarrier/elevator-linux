@@ -1,0 +1,108 @@
+#!/bin/sh
+# Elevator
+# Copyright (c) 2010 - 2011 Luke Carrier
+# Licensing information available at
+#   http://labs.cloudflux.net/go/elevator/license
+
+SOURCE_ROOT=$(dirname $0)
+
+if [ $1 == "--help" ]
+then
+    echo "Elevator installation help"
+    echo "=========================="
+    echo ""
+    echo "Configuring the tree"
+    echo "--------------------"
+    echo ""
+    echo "cd \"$SOURCE_ROOT\""
+    echo "./configure"
+    echo ""
+    echo "  --prefix=PREFIX"
+    echo "  Installs the elevator binary to PREFIX/bin/elevator"
+    echo ""
+    echo "  --allow-uid=UID"
+    echo "  Sets the uid of the user allowed to call elevator to UID"
+    echo ""
+    echo "  --allow-gid=GID"
+    echo "  Sets the gid of the user allowed to call elevator to GID"
+    echo ""
+    echo "  --target-uid=UID"
+    echo "  Sets the uid of the user elevator runs applications as to UID"
+    echo ""
+    echo "  --target-gid=GID"
+    echo "  Sets the gid of the user elevator runs applications as to GID"
+    echo ""
+    echo "Compiling the tree"
+    echo "------------------"
+    echo ""
+    echo "make clean # skip if you've never built this before"
+    echo "make"
+    echo ""
+    echo "Installing"
+    echo "----------"
+    echo ""
+    echo "make install"
+    exit
+fi
+
+for arg in "$@"
+do
+    if [ "${arg:0:9}" == "--prefix=" ]
+    then
+        INST_PREFIX=${arg:9}
+    elif [ "${arg:0:12}" == "--allow-uid=" ]
+    then
+        INST_ALLOW_UID=${arg:12}
+    elif [ "${arg:0:12}" == "--allow-gid=" ]
+    then
+        INST_ALLOW_GID=${arg:12}
+    elif [ "${arg:0:13}" == "--target-uid=" ]
+    then
+        INST_TARGET_UID=${arg:13}
+    elif [ "${arg:0:13}" == "--target-gid=" ]
+    then
+        INST_TARGET_GID=${arg:13}
+    fi
+done
+
+echo "int allow_uid = $INST_ALLOW_UID;
+int allow_gid = $INST_ALLOW_GID;
+int target_uid = $INST_TARGET_UID;
+int target_gid = $INST_TARGET_GID;" > "$SOURCE_ROOT/elevator.h"
+
+echo "PREFIX = $INST_PREFIX
+ALLOW_UID = $INST_ALLOW_UID
+ALLOW_GID = $INST_ALLOW_GID
+TARGET_UID = $INST_TARGET_UID
+TARGET_GID = $INST_TARGET_GID
+
+all:
+	mkdir build
+	gcc elevator.c -o build/elevator
+
+install:
+	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
+	install -o \$(TARGET_UID) -g \$(TARGET_GID) -m 7755 -v build/elevator \$(PREFIX)/bin
+
+uninstall:
+	rm -rfv \$(PREFIX)
+
+clean:
+	rm -rfv build" > "$SOURCE_ROOT/Makefile"
+
+echo "Elevator installation information"
+echo "================================="
+echo ""
+echo "Please verify the below values are correct before continuing. If not, re-run this script with the correct values. See $0 --help for available options."
+echo ""
+echo "Installation prefix"
+echo "-------------------"
+echo "$INST_PREFIX"
+echo ""
+echo "Allowed UID / GID"
+echo "-----------------"
+echo "$INST_ALLOW_UID / $INST_ALLOW_GID"
+echo ""
+echo "Target UID / GID"
+echo "----------------"
+echo "$INST_TARGET_UID / $INST_TARGET_GID"
