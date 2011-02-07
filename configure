@@ -97,11 +97,11 @@ all:
 	test -d build || mkdir build
 	gcc" > "$SOURCE_ROOT/Makefile"
 
-if [ "$INST_DEBUG" -eq "1" ];then
-	echo -n " -DDEBUG " >> "$SOURCE_ROOT/Makefile"
+if [ "$INST_DEBUG" == "1" ]; then
+	echo -n " -DDEBUG" >> "$SOURCE_ROOT/Makefile"
 fi
 
-echo "elevator.c -o build/elevator
+echo " elevator.c -o build/elevator
 
 install:
 	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
@@ -129,3 +129,7 @@ echo ""
 echo "Target UID / GID"
 echo "----------------"
 echo "$INST_TARGET_UID / $INST_TARGET_GID"
+echo ""
+echo "Debug enabled"
+echo "----------------"
+echo "$INST_DEBUG"
