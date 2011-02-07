@@ -79,13 +79,6 @@ do
     fi
 done
 
-test -f "$SOURCE_ROOT/elevator.h" && rm "$SOURCE_ROOT/elevator.h"
-cp "$SOURCE_ROOT/elevator.h.template" "$SOURCE_ROOT/elevator.h"
-sed -i "s/@@ALLOW_UID@@/$INST_ALLOW_UID/" "$SOURCE_ROOT/elevator.h"
-sed -i "s/@@ALLOW_GID@@/$INST_ALLOW_GID/" "$SOURCE_ROOT/elevator.h"
-sed -i "s/@@TARGET_UID@@/$INST_TARGET_UID/" "$SOURCE_ROOT/elevator.h"
-sed -i "s/@@TARGET_GID@@/$INST_TARGET_GID/" "$SOURCE_ROOT/elevator.h"
-
 echo -n "PREFIX = $INST_PREFIX
 ALLOW_UID = $INST_ALLOW_UID
 ALLOW_GID = $INST_ALLOW_GID
@@ -95,6 +88,14 @@ DEBUG = $INST_DEBUG
 
 all:
 	test -d build || mkdir build
+	test -f \"elevator.h\" && rm \"elevator.h\"
+
+	cp \"elevator.h.template\" \"elevator.h\"
+	sed -i \"s/@@ALLOW_UID@@/$INST_ALLOW_UID/\" \"elevator.h\"
+	sed -i \"s/@@ALLOW_GID@@/$INST_ALLOW_GID/\" \"elevator.h\"
+	sed -i \"s/@@TARGET_UID@@/$INST_TARGET_UID/\" \"elevator.h\"
+	sed -i \"s/@@TARGET_GID@@/$INST_TARGET_GID/\" \"elevator.h\"
+
 	gcc" > "$SOURCE_ROOT/Makefile"
 
 if [ "$INST_DEBUG" == "1" ]; then
@@ -111,7 +112,8 @@ uninstall:
 	rm -rfv \$(PREFIX)
 
 clean:
-	rm -rfv build" >> "$SOURCE_ROOT/Makefile"
+	rm -rfv build
+	rm -rfv elevator.h" >> "$SOURCE_ROOT/Makefile"
 
 echo "Elevator installation information"
 echo "================================="
