@@ -31,9 +31,9 @@ then
     echo ""
     echo "  --target-gid=GID"
     echo "  Sets the gid of the user elevator runs applications as to GID"
-	echo ""
-	echo "  --enabled-debug"
-	echo "  Enabled verbose debug output"
+    echo ""
+    echo "  --debug"
+    echo "  Enabled verbose debug output"
     echo ""
     echo "Compiling the tree"
     echo "------------------"
@@ -70,7 +70,7 @@ do
     elif [ "${arg:0:13}" == "--target-uid=" ]
     then
         INST_TARGET_UID=${arg:13}
-    elif [ "${arg:0:15}" == "--enabled-debug" ]
+    elif [ "${arg}" == "--debug" ]
     then
         INST_DEBUG=1;
     elif [ "${arg:0:13}" == "--target-gid=" ]
@@ -132,6 +132,6 @@ echo "Target UID / GID"
 echo "----------------"
 echo "$INST_TARGET_UID / $INST_TARGET_GID"
 echo ""
-echo "Debug enabled"
-echo "----------------"
+echo "Debug build?"
+echo "------------"
 echo "$INST_DEBUG"
