@@ -6,7 +6,7 @@
 
 SOURCE_ROOT=$(dirname $0)
 
-if [ $1 == "--help" ]
+if [ -z "$1" ] || [ $1 == "--help" ];
 then
     echo "Elevator installation help"
     echo "=========================="
@@ -31,6 +31,9 @@ then
     echo ""
     echo "  --target-gid=GID"
     echo "  Sets the gid of the user elevator runs applications as to GID"
+	echo ""
+	echo "  --enabled-debug"
+	echo "  Enabled verbose debug output"
     echo ""
     echo "Compiling the tree"
     echo "------------------"
@@ -44,6 +47,14 @@ then
     echo "make install"
     exit
 fi
+
+# Defaults
+INST_PREFIX="$SOURCE_ROOT";
+INST_ALLOW_UID="0";
+INST_ALLOW_GID="0";
+INST_TARGET_UID="0";
+INST_TARGET_GID="0";
+INST_DEBUG=0;
 
 for arg in "$@"
 do
@@ -59,26 +70,38 @@ do
     elif [ "${arg:0:13}" == "--target-uid=" ]
     then
         INST_TARGET_UID=${arg:13}
+    elif [ "${arg:0:15}" == "--enabled-debug" ]
+    then
+        INST_DEBUG=1;
     elif [ "${arg:0:13}" == "--target-gid=" ]
     then
         INST_TARGET_GID=${arg:13}
     fi
 done
 
-echo "int allow_uid = $INST_ALLOW_UID;
-int allow_gid = $INST_ALLOW_GID;
-int target_uid = $INST_TARGET_UID;
-int target_gid = $INST_TARGET_GID;" > "$SOURCE_ROOT/elevator.h"
+test -f "$SOURCE_ROOT/elevator.h" && rm "$SOURCE_ROOT/elevator.h"
+cp "$SOURCE_ROOT/elevator.h.template" "$SOURCE_ROOT/elevator.h"
+sed -i "s/@@ALLOW_UID@@/$INST_ALLOW_UID/" "$SOURCE_ROOT/elevator.h"
+sed -i "s/@@ALLOW_GID@@/$INST_ALLOW_GID/" "$SOURCE_ROOT/elevator.h"
+sed -i "s/@@TARGET_UID@@/$INST_TARGET_UID/" "$SOURCE_ROOT/elevator.h"
+sed -i "s/@@TARGET_GID@@/$INST_TARGET_GID/" "$SOURCE_ROOT/elevator.h"
 
-echo "PREFIX = $INST_PREFIX
+echo -n "PREFIX = $INST_PREFIX
 ALLOW_UID = $INST_ALLOW_UID
 ALLOW_GID = $INST_ALLOW_GID
 TARGET_UID = $INST_TARGET_UID
 TARGET_GID = $INST_TARGET_GID
+DEBUG = $INST_DEBUG
 
 all:
-	mkdir build
-	gcc elevator.c -o build/elevator
+	test -d build || mkdir build
+	gcc" > "$SOURCE_ROOT/Makefile"
+
+if [ "$INST_DEBUG" -eq "1" ];then
+	echo -n " -DDEBUG " >> "$SOURCE_ROOT/Makefile"
+fi
+
+echo "elevator.c -o build/elevator
 
 install:
 	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
@@ -88,7 +111,7 @@ uninstall:
 	rm -rfv \$(PREFIX)
 
 clean:
-	rm -rfv build" > "$SOURCE_ROOT/Makefile"
+	rm -rfv build" >> "$SOURCE_ROOT/Makefile"
 
 echo "Elevator installation information"
 echo "================================="

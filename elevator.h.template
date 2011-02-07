@@ -1,0 +1,48 @@
+/*
+ * Elevator
+ * Copyright (c) 2010 - 2011 Luke Carrier
+ * Licensing information available at
+ *   http://labs.cloudflux.net/go/elevator/license
+ */
+
+/**
+ * Allowed UID.
+ */
+int allow_uid = @@ALLOW_UID@@;
+
+/**
+ * Allowed GID.
+*/
+int allow_gid = @@ALLOW_GID@@;
+
+/**
+ * Target UID.
+ */
+int target_uid = @@TARGET_UID@@;
+
+/**
+ * Target GID.
+ */
+int target_gid = @@TARGET_GID@@;
+
+/**
+ * Return codes
+ */
+
+/* Invalid UID executing */
+#define E_USERCREDENTIALVALIDATIONFAILURE 77
+
+/* Not enough arguments passed */
+#define E_TOOFEWARGUMENTSSUPPLIED 64
+
+/* Invalid executable specified */
+#define E_INVALIDEXECUTABLE	74
+
+/* Execution error */
+#define E_EXECUTIONERROR 66
+
+/* Set UID failure */
+#define E_SETUIDFAILED 75
+
+/* Set GID failure */
+#define E_SETGUIDFAILED 75
