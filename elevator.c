@@ -2,7 +2,7 @@
  * Elevator
  * Copyright (c) 2010 - 2011 Luke Carrier
  * Licensing information available at
- *   http://labs.cloudflux.net/go/elevator/license
+ *   http://github.com/cloudflux/elevator
  */
 
 /* Required header files */
@@ -11,6 +11,30 @@
 #include <unistd.h>
 #include "elevator.h"
 
+/**
+ * Elevator.
+ *
+ * <h2>
+ * Usage
+ * </h2>
+ *
+ * <p>
+ * elevator <executable> [options]
+ * </p>
+ *
+ * <p>
+ * Run <executable> with the supplied list of [options]. The full path to the
+ * executable must be specified.
+ * </p>
+ *
+ * @param string executable
+ *        The full path to the executable we're calling. Elevator does not
+ *        search the PATH environment variable for this executable, so be sure
+ *        to use only fully-qualified paths.
+ * @param string options
+ *        A list of options, relevant only to the called executable. Elevator
+ *        itself does not have any run-time parameters.
+ */
 int main(int argc, char **argv) {
 
     /* Get some information about the executable file */

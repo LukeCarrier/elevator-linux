@@ -2,7 +2,7 @@
 # Elevator
 # Copyright (c) 2010 - 2011 Luke Carrier
 # Licensing information available at
-#   http://labs.cloudflux.net/go/elevator/license
+#   http://github.com/cloudflux/elevator
 
 SOURCE_ROOT=$(dirname $0)
 
