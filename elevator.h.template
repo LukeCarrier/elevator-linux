@@ -6,43 +6,61 @@
  */
 
 /**
- * Allowed UID.
+ * Allowed uid.
  */
 int allow_uid = @@ALLOW_UID@@;
 
 /**
- * Allowed GID.
+ * Allowed gid.
 */
 int allow_gid = @@ALLOW_GID@@;
 
 /**
- * Target UID.
+ * Target uid.
  */
 int target_uid = @@TARGET_UID@@;
 
 /**
- * Target GID.
+ * Target gid.
  */
 int target_gid = @@TARGET_GID@@;
 
 /**
- * Return codes
+ * Error: executed by invalid UID.
  */
-
-/* Invalid UID executing */
 #define E_USERCREDENTIALVALIDATIONFAILURE 77
 
-/* Not enough arguments passed */
+/**
+ * Error: too few arguments passed.
+ */
 #define E_TOOFEWARGUMENTSSUPPLIED 64
 
-/* Invalid executable specified */
-#define E_INVALIDEXECUTABLE	74
+/**
+ * Error: binary file doesn't exist.
+ */
+#define E_NONEXISTENTEXECUTABLE 66
 
-/* Execution error */
-#define E_EXECUTIONERROR 66
+/**
+ * Error: invalid executable specified.
+ */
+#define E_INVALIDEXECUTABLE 65
 
-/* Set UID failure */
+/**
+ * Error: no execute rights on the executable.
+ */
+#define E_NOEXECUTERIGHTS 77
+
+/**
+ * Error: setuid() failed.
+ */
 #define E_SETUIDFAILED 75
 
-/* Set GID failure */
+/**
+ * Error: setgid() failed.
+ */
 #define E_SETGUIDFAILED 75
+
+/**
+ * Error: execv() failed.
+ */
+#define E_DOOMED 71

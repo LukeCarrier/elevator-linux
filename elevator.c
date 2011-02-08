@@ -5,108 +5,115 @@
  *   http://labs.cloudflux.net/go/elevator/license
  */
 
+/* Required header files */
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "elevator.h"
-
-int is_executable(const char *file_path) {
-    struct stat stat_data;
-    int result = stat(file_path, &stat_data);
-
-    if (result < 0) {
-        #ifdef DEBUG
-            perror("Could not stat file\n");
-        #endif
-        return 0;
-    }
-
-    if (!S_ISREG(stat_data.st_mode)) {
-        #ifdef DEBUG
-            perror("Not a regular file\n");
-        #endif
-        return 0;
-    }
-
-    if (stat_data.st_uid == geteuid()) {
-            if(stat_data.st_mode & S_IXUSR){
-                return 1;
-            }
-
-            #ifdef DEBUG
-                perror("Owner but have no execute permissions\n");
-            #endif
-            return 0;
-    }
-
-    if (stat_data.st_gid == getegid()){
-            if(stat_data.st_mode & S_IXGRP){
-                return 1;        
-            }
-
-            #ifdef DEBUG
-                perror("Group but no execute permission\n");
-            #endif
-            return 0;
-    }
-
-    if(stat_data.st_mode & S_IXOTH) {
-        return 1;
-    }
-
-    #ifdef DEBUG
-        perror("No global execute permissions\n");
-    #endif
-    return 0;
-}
-
-
 
 int main(int argc, char **argv) {
 
-    if (getuid()  != allow_uid || getgid()  != allow_gid) {
+    /* Get some information about the executable file */
+    struct stat stat_data;
+    int result = stat(file_path, &stat_data);
+
+    /* If an error occured in stat(), the file probably doesn't exist */
+    if (result < 0) {
+
+        #ifdef DEBUG
+            perror("stat() failed; aborting\n");
+        #endif
+        return E_NONEXISTENTEXECUTABLE;
+
+    }
+
+    /* Ensure it's a file; not a directory, symbolic link or other oddity */
+    if (!S_ISREG(stat_data.st_mode)) {
+
+        #ifdef DEBUG
+            perror("Not a regular file; aborting\n");
+        #endif
+        return E_INVALIDEXECUTABLE;
+
+    }
+
+    /* Do we have executable rights? */
+    if ((stat_data.st_uid == getuid()) && (stat_data.st_mode & S_IXUSR)) {
+
+        /* We own the binary and have execute rights */
+        #ifdef DEBUG
+            perror("Have owner execute rights; continuing\n");
+        #endif
+
+    } else if ((stat_data.st_gid == getgid()) && (stat_data.st_mode & S_IXGRP)) {
+
+        /* We're a member of the binary's group and have execute rights */
+        #ifdef DEBUG
+            perror("Have group execute rights; continuing\n");
+        #endif
+
+    } else if (stat_data.st_mode & S_IXOTH) {
+
+        /* The binary has the 'world' execute bit set */
+        #ifdef DEBUG
+            perror("Have world execute rights; continuing");
+        #endif
+
+    } else {
+
+        #ifdef DEBUG
+            perror("Don't have any execute rights; aborting\n");
+        #endif
+        return E_NOEXECUTERIGHTS;
+
+    }
+
+    if (getuid() != allow_uid || getgid()  != allow_gid) {
+
         #ifdef DEBUG
             perror("Failed uid check; aborting\n");
         #endif
         return E_USERCREDENTIALVALIDATIONFAILURE;
+
     }
 
     if (argc < 2) {
+
         #ifdef DEBUG
             perror("Too few arguments supplied; aborting\n");
         #endif
         return E_TOOFEWARGUMENTSSUPPLIED;
+
     }
 
     if(setuid(target_uid) != 0) {
+
         #ifdef DEBUG
-            perror("SetUID failed\n");
+            perror("setuid() failed; aborting\n");
         #endif
         return E_SETUIDFAILED;
+
     }
-    
+
     if(setgid(target_gid) != 0){
+
         #ifdef DEBUG
-            perror("SetGID failed\n");
+            perror("setgid() failed; aborting\n");
         #endif
         return E_SETGUIDFAILED;
+
     }
 
-    /* Increment argv to remove this binary from the call */
+    /* Increment the argument vector to remove the executable */
     argv++;
 
-    /* Check this after setuid in cause permissions dictate that the initial user cannot see it */
-    if(!is_executable(argv[0])) {
-        printf("%s\n", argv[0]);
-        #ifdef DEBUG
-            perror("File requested is not executable\n");
-        #endif
-        return E_INVALIDEXECUTABLE;
-    }
-
+    /* Execute the executable */
     execv(argv[0], argv);
+
+    /* Something went drastically wrong if we got here */
     #ifdef DEBUG
         perror("Execution failed\n");
     #endif
-    return E_EXECUTIONERROR;
+    return E_DOOMED;
+
 }
