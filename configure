@@ -6,7 +6,7 @@
 
 SOURCE_ROOT=$(dirname $0)
 
-if [ -z "$1" ] || [ $1 == "--help" ];
+if [ -z "$1" ] || [ $1 == "--help" ]
 then
     echo "Elevator installation help"
     echo "=========================="
@@ -33,7 +33,7 @@ then
     echo "  Sets the gid of the user elevator runs applications as to GID"
     echo ""
     echo "  --debug"
-    echo "  Enabled verbose debug output"
+    echo "  Enables verbose debug output"
     echo ""
     echo "Compiling the tree"
     echo "------------------"
@@ -70,12 +70,12 @@ do
     elif [ "${arg:0:13}" == "--target-uid=" ]
     then
         INST_TARGET_UID=${arg:13}
-    elif [ "${arg}" == "--debug" ]
-    then
-        INST_DEBUG=1;
     elif [ "${arg:0:13}" == "--target-gid=" ]
     then
         INST_TARGET_GID=${arg:13}
+    elif [ "$arg" == "--debug" ]
+    then
+        INST_DEBUG=1
     fi
 done
 
