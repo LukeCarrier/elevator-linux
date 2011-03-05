@@ -56,6 +56,24 @@ int main(int argc, char **argv) {
 
     }
 
+    if(setuid(target_uid) != 0) {
+
+        #ifdef DEBUG
+            perror("setuid() failed; aborting\n");
+        #endif
+        return E_SETUIDFAILED;
+
+    }
+
+    if(setgid(target_gid) != 0){
+
+        #ifdef DEBUG
+            perror("setgid() failed; aborting\n");
+        #endif
+        return E_SETGUIDFAILED;
+
+    }
+
     /* STAT the requested file so we can perform checks on it */
     struct stat stat_data;
     int result = stat(file_path, &stat_data);
@@ -108,24 +126,6 @@ int main(int argc, char **argv) {
             perror("Don't have any execute rights; aborting\n");
         #endif
         return E_NOEXECUTERIGHTS;
-
-    }
-
-    if(setuid(target_uid) != 0) {
-
-        #ifdef DEBUG
-            perror("setuid() failed; aborting\n");
-        #endif
-        return E_SETUIDFAILED;
-
-    }
-
-    if(setgid(target_gid) != 0){
-
-        #ifdef DEBUG
-            perror("setgid() failed; aborting\n");
-        #endif
-        return E_SETGUIDFAILED;
 
     }
 
