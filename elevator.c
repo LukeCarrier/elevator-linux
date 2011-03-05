@@ -36,8 +36,27 @@
  *        itself does not have any run-time parameters.
  */
 int main(int argc, char **argv) {
+	/* Check we have enough arguments */
+    if (argc < 2) {
 
-    /* Get some information about the executable file */
+        #ifdef DEBUG
+            perror("Too few arguments supplied; aborting\n");
+        #endif
+        return E_TOOFEWARGUMENTSSUPPLIED;
+
+    }
+
+	/* Check the executing uid and gid are allowed */
+    if (getuid() != allow_uid || getgid()  != allow_gid) {
+
+        #ifdef DEBUG
+            perror("Failed uid check; aborting\n");
+        #endif
+        return E_USERCREDENTIALVALIDATIONFAILURE;
+
+    }
+
+    /* STAT the requested file so we can perform checks on it */
     struct stat stat_data;
     int result = stat(file_path, &stat_data);
 
@@ -89,24 +108,6 @@ int main(int argc, char **argv) {
             perror("Don't have any execute rights; aborting\n");
         #endif
         return E_NOEXECUTERIGHTS;
-
-    }
-
-    if (getuid() != allow_uid || getgid()  != allow_gid) {
-
-        #ifdef DEBUG
-            perror("Failed uid check; aborting\n");
-        #endif
-        return E_USERCREDENTIALVALIDATIONFAILURE;
-
-    }
-
-    if (argc < 2) {
-
-        #ifdef DEBUG
-            perror("Too few arguments supplied; aborting\n");
-        #endif
-        return E_TOOFEWARGUMENTSSUPPLIED;
 
     }
 
