@@ -88,7 +88,6 @@ DEBUG = $INST_DEBUG
 
 all:
 	test -d build || mkdir build
-	test -f \"elevator.h\" || rm \"elevator.h\"
 
 	cp \"elevator.h.template\" \"elevator.h\"
 	sed -i \"s/@@ALLOW_UID@@/$INST_ALLOW_UID/\" \"elevator.h\"
