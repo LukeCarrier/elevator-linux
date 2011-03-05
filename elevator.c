@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
     /* STAT the requested file so we can perform checks on it */
     struct stat stat_data;
-    int result = stat(file_path, &stat_data);
+    int result = stat(argv[1], &stat_data);
 
     /* If an error occured in stat(), the file probably doesn't exist */
     if (result < 0) {
