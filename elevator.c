@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     /* Set gid to that of the target user's group
      *   Again, we handle errors from setgid() that prevent us from adopting
      *   the necessary privileges. */
-    if (setgid(target_gid) != 0)
+    if (setgid(target_gid) != 0) {
 
         #ifdef DEBUG
             perror("setgid() failed; aborting\n");
