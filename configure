@@ -98,7 +98,7 @@ TARGET_UID = $INST_TARGET_UID
 TARGET_GID = $INST_TARGET_GID
 DEBUG = $INST_DEBUG
 
-all:
+all: clean
 	test -d build || mkdir build
 
 	cp \"elevator.h.template\" \"elevator.h\"
