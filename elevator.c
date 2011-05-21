@@ -36,10 +36,13 @@
  *        itself does not have any run-time parameters.
  */
 int main(int argc, char **argv) {
-	/* Check we have enough arguments */
+
+    /* Check we have enough arguments
+     *   We require at least 2 arguments: the elevator binary and the target
+     *   binary. Any number greater than 2 is also okay, because these are
+     *   passed to the target binary as arguments. */
     if (argc < 2) {
 
-		/* We require the minimum of 2 args ie the binary and the target binary */
         #ifdef DEBUG
             perror("Too few arguments supplied; aborting\n");
         #endif
@@ -47,10 +50,11 @@ int main(int argc, char **argv) {
 
     }
 
-	/* Check the executing uid and gid are allowed */
-    if (getuid() != allow_uid || getgid()  != allow_gid) {
+    /* Check the calling user's credentials
+     *   Abort if they don't match those specified at configure time; probably
+     *   some script kiddie. */
+    if (getuid() != allow_uid || getgid() != allow_gid) {
 
-		/* uid or gid don't match what we expect */
         #ifdef DEBUG
             perror("Failed uid check; aborting\n");
         #endif
@@ -58,10 +62,11 @@ int main(int argc, char **argv) {
 
     }
 
-	/* Try and setuid us to the target UID */
-    if(setuid(target_uid) != 0) {
+    /* Set uid to that of the target user
+     *   Abort if this fails, as we obviously cannot execute the binary with
+     *   the desired privileges. */
+    if (setuid(target_uid) != 0) {
 
-		/* setuid Failed */
         #ifdef DEBUG
             perror("setuid() failed; aborting\n");
         #endif
@@ -69,10 +74,11 @@ int main(int argc, char **argv) {
 
     }
 
-	/* Try and setgid us to the target GID */
-    if(setgid(target_gid) != 0){
+    /* Set gid to that of the target user's group
+     *   Again, we handle errors from setgid() that prevent us from adopting
+     *   the necessary privileges. */
+    if (setgid(target_gid) != 0)
 
-		/* setgid Failed */
         #ifdef DEBUG
             perror("setgid() failed; aborting\n");
         #endif
@@ -80,14 +86,17 @@ int main(int argc, char **argv) {
 
     }
 
-    /* STAT the requested file so we can perform checks on it */
+    /* Gather information about the target binary
+     *   Use stat() to gather information about the binary from the disk, since
+     *   we carry out basic sanity checks on permissions. */
     struct stat stat_data;
     int result = stat(argv[1], &stat_data);
 
-    /* Check if an error occurred - any minus value is an error */
+    /* Check if an error occurred
+     *   stat() returns negative values on error, in the name of inconsistency
+     *   and confusion. */
     if (result < 0) {
 
-		/* An error occured in stat(), the file probably doesn't exist */
         #ifdef DEBUG
             perror("stat() failed; aborting\n");
         #endif
@@ -95,10 +104,11 @@ int main(int argc, char **argv) {
 
     }
 
-    /* Check if the type is a regular file */
+    /* Check if the type is a regular file
+     *   Error if it is not a regular file and we can't use it. This usually
+     *   means it's likely to be a directory, symbolic link or other oddity. */
     if (!S_ISREG(stat_data.st_mode)) {
 
-		/* Not a regular file so we can't use it - probably a directory, symbolic link or other oddity */
         #ifdef DEBUG
             perror("Not a regular file; aborting\n");
         #endif
@@ -106,7 +116,9 @@ int main(int argc, char **argv) {
 
     }
 
-    /* Check we have some form of executable rights? */
+    /* Check we have some form of executable rights
+     *   We must have execute rights either through owner, group or world
+     *   ownership. */
     if ((stat_data.st_uid == getuid()) && (stat_data.st_mode & S_IXUSR)) {
 
         /* We own the binary and have execute rights */
@@ -137,13 +149,18 @@ int main(int argc, char **argv) {
 
     }
 
-    /* Increment the argument vector to remove the executable */
+    /* Increment the argument vector
+     *   We don't need the path to the elevator executable any more. */
     argv++;
 
     /* Execute the executable */
     execv(argv[0], argv);
 
-    /* Something went drastically wrong if we got here - execv will only return if any error has occurred */
+    /* Something went drastically wrong
+     *   execv() will only return if any error has occurred, as it otherwise
+     *   replaces the executable in memory, thus taking control of its process.
+     *   We really need the caller to acknowledge this, so we should return an
+     *   evil exit status. */
     #ifdef DEBUG
         perror("Execution failed\n");
     #endif

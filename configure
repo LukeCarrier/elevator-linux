@@ -4,8 +4,12 @@
 # Licensing information available at
 #   http://github.com/cloudflux/elevator
 
+# Source directory path
+#   The path to the directory containing the configure script is the same one
+#   that contains the path to the source code; convenient, eh?
 SOURCE_ROOT=$(dirname $0)
 
+# Help the poor user out...
 if [ -z "$1" ] || [ $1 == "--help" ]
 then
     echo "Elevator installation help"
@@ -48,7 +52,15 @@ then
     exit
 fi
 
-# Defaults
+# Default values
+#   This may be overly cautious, but it's always better to be safe than sorry.
+#   Just in case they're already set, we change the values of the configuration
+#   values in the name of sanity. We should use safer defaults just in case the
+#   person building the binary doesn't realise just how big a potential threat
+#   the setuid bit poses.
+#
+#   The defaults allow the binary to be executed by the root user, thus
+#   preventing privilege escalation for normal users.
 INST_PREFIX="$SOURCE_ROOT";
 INST_ALLOW_UID="0";
 INST_ALLOW_GID="0";
@@ -95,13 +107,13 @@ all:
 	sed -i \"s/@@TARGET_UID@@/$INST_TARGET_UID/\" \"elevator.h\"
 	sed -i \"s/@@TARGET_GID@@/$INST_TARGET_GID/\" \"elevator.h\"
 
-	gcc" > "$SOURCE_ROOT/Makefile"
+	gcc " > "$SOURCE_ROOT/Makefile"
 
 if [ "$INST_DEBUG" == "1" ]; then
-	echo -n " -DDEBUG" >> "$SOURCE_ROOT/Makefile"
+	echo -n "-DDEBUG " >> "$SOURCE_ROOT/Makefile"
 fi
 
-echo " elevator.c -o build/elevator
+echo "elevator.c -o build/elevator
 
 install:
 	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
