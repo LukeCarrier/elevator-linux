@@ -7,7 +7,7 @@
 # Source directory path
 #   The path to the directory containing the configure script is the same one
 #   that contains the path to the source code; convenient, eh?
-SOURCE_ROOT=$(dirname $0)
+SOURCE_ROOT="$(dirname $0)"
 
 # Help the poor user out...
 if [ -z "$1" ] || [ $1 == "--help" ]
