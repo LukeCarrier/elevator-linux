@@ -8,6 +8,7 @@
 /* Required header files */
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sysexits.h>
 #include <unistd.h>
 #include "elevator.h"
 
@@ -46,7 +47,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("Too few arguments supplied; aborting\n");
         #endif
-        return E_TOOFEWARGUMENTSSUPPLIED;
+        return EX_USAGE;
 
     }
 
@@ -58,7 +59,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("Failed uid check; aborting\n");
         #endif
-        return E_USERCREDENTIALVALIDATIONFAILURE;
+        return EX_NOPERM;
 
     }
 
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("setuid() failed; aborting\n");
         #endif
-        return E_SETUIDFAILED;
+        return EX_TEMPFAIL;
 
     }
 
@@ -82,7 +83,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("setgid() failed; aborting\n");
         #endif
-        return E_SETGUIDFAILED;
+        return EX_TEMPFAIL;
 
     }
 
@@ -100,7 +101,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("stat() failed; aborting\n");
         #endif
-        return E_NONEXISTENTEXECUTABLE;
+        return EX_NOINPUT;
 
     }
 
@@ -112,7 +113,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("Not a regular file; aborting\n");
         #endif
-        return E_INVALIDEXECUTABLE;
+        return EX_DATAERR;
 
     }
 
@@ -145,7 +146,7 @@ int main(int argc, char **argv) {
         #ifdef DEBUG
             perror("Don't have any execute rights; aborting\n");
         #endif
-        return E_NOEXECUTERIGHTS;
+        return EX_NOPERM;
 
     }
 
@@ -164,6 +165,6 @@ int main(int argc, char **argv) {
     #ifdef DEBUG
         perror("Execution failed\n");
     #endif
-    return E_DOOMED;
+    return EX_OSERR;
 
 }
