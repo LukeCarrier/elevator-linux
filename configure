@@ -120,11 +120,11 @@ install:
 	install -o \$(TARGET_UID) -g \$(TARGET_GID) -m 7755 -v build/elevator \$(PREFIX)/bin
 
 uninstall:
-	rm -rfv \$(PREFIX)
+	test -d \"\$(PREFIX)\" && rm -rfv \"\$(PREFIX)\"
 
 clean:
-	rm -rfv build
-	rm -rfv elevator.h" >> "$SOURCE_ROOT/Makefile"
+	test -d "build" && rm -rfv "build"
+	rm -rfv "elevator.h"" >> "$SOURCE_ROOT/Makefile"
 
 echo "Elevator installation information"
 echo "================================="
