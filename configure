@@ -99,7 +99,7 @@ TARGET_GID = $INST_TARGET_GID
 DEBUG = $INST_DEBUG
 
 all: clean
-	test -d build || mkdir build
+	mkdir build
 
 	cp \"elevator.h.template\" \"elevator.h\"
 	sed -i \"s/@@ALLOW_UID@@/$INST_ALLOW_UID/\" \"elevator.h\"
@@ -119,12 +119,9 @@ install:
 	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
 	install -o \$(TARGET_UID) -g \$(TARGET_GID) -m 7755 -v build/elevator \$(PREFIX)/bin
 
-uninstall:
-	test -d \"\$(PREFIX)\" && rm -rfv \"\$(PREFIX)\"
-
 clean:
-	test -d "build" && rm -rfv "build"
-	rm -rfv "elevator.h"" >> "$SOURCE_ROOT/Makefile"
+	-rm -rf "build"
+	-rm -f  "elevator.h"" >> "$SOURCE_ROOT/Makefile"
 
 echo "Elevator installation information"
 echo "================================="
