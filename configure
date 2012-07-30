@@ -116,8 +116,8 @@ fi
 echo "elevator.c -o build/elevator
 
 install:
-	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(PREFIX)/bin
-	install -o \$(TARGET_UID) -g \$(TARGET_GID) -m 7755 -v build/elevator \$(PREFIX)/bin
+	install -d -o \$(ALLOW_UID) -g \$(ALLOW_GID) -m 0751 -v \$(DESTDIR)\$(PREFIX)/bin
+	install -o \$(TARGET_UID) -g \$(TARGET_GID) -m 7755 -v build/elevator \$(DESTDIR)\$(PREFIX)/bin
 
 clean:
 	-rm -rf "build"
